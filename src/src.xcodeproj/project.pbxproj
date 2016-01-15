@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1307A614A812878EB8703A62 /* Pods_src.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AD30334DBF8AFA64862D7A4 /* Pods_src.framework */; };
-		A682ABF11C24E72C0042C256 /* ApiException.swift in Sources */ = {isa = PBXBuildFile; fileRef = A682ABF01C24E72C0042C256 /* ApiException.swift */; };
 		A68E79D11C1FEB1800B68C15 /* srcTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68E79D01C1FEB1800B68C15 /* srcTest.swift */; };
 		A69924A51C27E921002C537E /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69924A41C27E921002C537E /* Util.swift */; };
 		A6DADAA81C110B0E008D9A78 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DADAA71C110B0E008D9A78 /* main.swift */; };
@@ -66,7 +65,6 @@
 		0638E414121B6066E61F1176 /* Pods-src.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-src.debug.xcconfig"; path = "Pods/Target Support Files/Pods-src/Pods-src.debug.xcconfig"; sourceTree = "<group>"; };
 		0AD30334DBF8AFA64862D7A4 /* Pods_src.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_src.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7414E23C3B46765A56C25E52 /* Pods-src.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-src.release.xcconfig"; path = "Pods/Target Support Files/Pods-src/Pods-src.release.xcconfig"; sourceTree = "<group>"; };
-		A682ABF01C24E72C0042C256 /* ApiException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiException.swift; sourceTree = "<group>"; };
 		A68E79CC1C1FEB1800B68C15 /* srcTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = srcTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A68E79CF1C1FEB1800B68C15 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A68E79D01C1FEB1800B68C15 /* srcTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = srcTest.swift; sourceTree = "<group>"; };
@@ -194,7 +192,6 @@
 				A6DADBAE1C111470008D9A78 /* ApiResponse.swift */,
 				A6DADBAF1C111470008D9A78 /* Client.swift */,
 				A6DADBB01C111470008D9A78 /* MultiPartBuilder.swift */,
-				A682ABF01C24E72C0042C256 /* ApiException.swift */,
 			);
 			path = Http;
 			sourceTree = "<group>";
@@ -437,7 +434,6 @@
 				A6DADBD61C111470008D9A78 /* Client.swift in Sources */,
 				A6DADBDA1C111470008D9A78 /* AES.swift in Sources */,
 				A6DADAA81C110B0E008D9A78 /* main.swift in Sources */,
-				A682ABF11C24E72C0042C256 /* ApiException.swift in Sources */,
 				A6DADBD81C111470008D9A78 /* Auth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

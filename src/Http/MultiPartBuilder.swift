@@ -54,17 +54,6 @@ public class MultipartBuilder {
             let fieldName = "uploadFile"
             element["contents"] = String(contentsOfFile: content.path!!, encoding: NSUTF8StringEncoding, error: &error)!
         }
-        //
-        //        // Set the filename if not empty
-        //        if(fileName != "") {
-        //            element["filename"] = fileName
-        //        }
-        //
-        //        // Set the headers if not empty
-        //        if(!headers!.isEmpty) {
-        //            element["headers"] = headers
-        //        }
-        //
         self._contents = element
         
         return self
@@ -77,10 +66,9 @@ public class MultipartBuilder {
     
     // Create a request
     public func request(url: String, method: String = "POST", completion: (respsone: ApiResponse) -> Void) {
-        //        var stream = self.requestBody()
+        
         let uniqueId = NSProcessInfo.processInfo().globallyUniqueString
         let boundaryConstant = "Boundary-"+uniqueId
-        //        var dataString: String = String()
         
         var headers: [String: String] = [:]
         headers["Content-type"] = "application/octet-stream; boundary=" + boundaryConstant
@@ -103,11 +91,7 @@ public class MultipartBuilder {
         dataString += String(stringInterpolationSegment: contents)
         dataString += "\r\n"
         dataString += "--\(boundaryConstant)--\r\n"
-        
-        
-        //        let contentType = "multipart/form-data; boundary=" + boundaryConstant
-        
-        
+
     }
     
     
@@ -143,32 +127,5 @@ public class MultipartBuilder {
         println("Body String is :"+result)
         return result
     }
-    
-    // Create the requestBody
-    //    func requestBody() -> [String: AnyObject] {
-    //        let uniqueId = NSProcessInfo.processInfo().globallyUniqueString
-    //        let boundaryConstant = "Boundary-"+uniqueId
-    //        var headers: [String: String] = [:]
-    //        headers["Content-type"] = "multipart/form-data; boundary=" + boundaryConstant
-    //
-    //        let fileName = self._contents["filename"]
-    //        let contents = self._contents["contents"]
-    //        let mimeType = "text/csv"
-    //        let fieldName = "uploadFile"
-    //
-    //
-    //        var error: NSError?
-    //        var dataString = "--\(boundaryConstant)\r\n"
-    //        dataString += "Content-Disposition: form-data; name=\"\(fieldName)\"; filename=\"\(fileName)\"\r\n"
-    //        dataString += "Content-Type: \(mimeType)\r\n\r\n"
-    //        dataString += contents
-    //        dataString += "\r\n"
-    //        dataString += "--\(boundaryConstant)--\r\n"
-    //        
-    //        
-    //        let contentType = "multipart/form-data; boundary=" + boundaryConstant
-    
-    //    }
-    
     
 }

@@ -18,27 +18,38 @@ var password = ""
 var response: ApiResponse
 
 
-var rcsdk = SDK(appKey: app_key, appSecret: app_secret, server: SDK.RC_SERVER_SANDBOX)
+var rcsdk = SDK(appKey: app_key, appSecret: app_secret, server: SDK.RC_SERVER_SANDBOX, appName: "Swift_Test_Sample", appVersion: "1.0.0")
 println("SDK initialized")
 var platform = rcsdk.getPlatform()
 var subscription = rcsdk.createSubscription()
-var multipartBuilder = rcsdk.createMultipartBuilder()
+//var multipartBuilder = rcsdk.createMultipartBuilder()
 println("Platform singleton")
-response = platform.login(username, ext:"101", password: password)
-println(response.JSONStringify(response.getDict(), prettyPrinted: true))
 
+// login
+
+platform.login(username, ext:"101", password: password)
+    {
+        (apiresponse,apiexception) in
+        println("Response is :")
+        println(apiresponse!.JSONStringify(apiresponse!.getDict(), prettyPrinted: true))
+    }
 // Test a GET request
 
-//platform.refresh()
+platform.refresh()
+    {
+        (apiresponse,apiexception) in
+        println("Response is :")
+        println(apiresponse!.JSONStringify(apiresponse!.getDict(), prettyPrinted: true))
+    }
 
 platform.get("/account/~/extension/~/call-log")
     {
-        (apiresponse) in
+        (apiresponse,apiexception) in
         println("Response is :")
-        println(apiresponse.JSONStringify(apiresponse.getDict(), prettyPrinted: true))
-}
+        println(apiresponse!.JSONStringify(apiresponse!.getDict(), prettyPrinted: true))
+    }
 
-//// add events to the subscription object
+// add events to the subscription object
 subscription.addEvents(
     [
         "/restapi/v1.0/account/~/extension/~/presence",
@@ -52,7 +63,7 @@ subscription.register()
         println("Subscribing",response.getResponse())
 }
 
-
+//
 platform.post("/account/~/extension/~/ringout", body :
     [ "to": ["phoneNumber": "18315941779"],
         "from": ["phoneNumber": "15856234190"],
@@ -60,8 +71,8 @@ platform.post("/account/~/extension/~/ringout", body :
         "playPrompt": "true"
     ])
     {
-        (apiresponse) in
-         println(apiresponse.JSONStringify(apiresponse.getDict(), prettyPrinted: true))
+        (apiresponse,apiexception) in
+         println(apiresponse!.JSONStringify(apiresponse!.getDict(), prettyPrinted: true))
 }
 
 platform.post("/account/~/extension/~/sms", body :
@@ -70,8 +81,8 @@ platform.post("/account/~/extension/~/sms", body :
         "text": "Test"
     ])
     {
-        (apiresponse) in
-        println(apiresponse.JSONStringify(apiresponse.getDict(), prettyPrinted: true))
+        (apiresponse,apiexception) in
+        println(apiresponse!.JSONStringify(apiresponse!.getDict(), prettyPrinted: true))
 }
 
 print("completed ring-out")

@@ -127,8 +127,8 @@ public class Subscription: NSObject, PNObjectEventListener {
             body: [
                 "eventFilters": getFullEventFilters()
             ]) {
-                (transaction) in
-                let dictionary = transaction.getDict()
+                (transaction,exception) in
+                let dictionary = transaction!.getDict()
                 if let error = dictionary["errorCode"] {
                     self.subscribe(options){
                         (t) in
@@ -155,9 +155,10 @@ public class Subscription: NSObject, PNObjectEventListener {
                     "encryption": "false"
                 ]
             ])  {
-                (transaction) in
+                (transaction,exception) in
                 
-                let dictionary = transaction.getDict()
+                let dictionary = transaction!.getDict()
+                println("The subscription dictionary is :", dictionary)
                 var sub = ISubscription()
                 sub.eventFilters =      dictionary["eventFilters"] as! [String]
                 self.eventFilters =     dictionary["eventFilters"] as! [String]

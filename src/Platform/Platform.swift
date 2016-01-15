@@ -20,6 +20,7 @@ public class Platform {
     public let URL_PREFIX = "/restapi";
     
     
+    
     // Platform credentials
     internal var auth: Auth
     internal var client: Client
@@ -28,8 +29,9 @@ public class Platform {
     internal let appSecret: String
     internal var appName: String
     internal var appVersion: String
+    internal var USER_AGENT: String
     
-    
+        
     /// Constructor for the platform of the SDK
     ///
     /// :param: appKey      The appKey of your app
@@ -43,6 +45,7 @@ public class Platform {
         self.server = server
         self.auth = Auth()
         self.client = client
+        self.USER_AGENT = "Swift :" + "/App Name : " + appName + "/App Version :" + appVersion + "/Current iOS Version :" + "/RCSwiftSDK";
         
     }
     
@@ -72,17 +75,19 @@ public class Platform {
     ///
     /// :param: username    The username of the RingCentral account
     /// :param: password    The password of the RingCentral account
-    public func login(username: String, ext: String, password: String) -> ApiResponse {
-        let response = requestToken(self.TOKEN_ENDPOINT,body: [
+    public func login(username: String, ext: String, password: String, completion: (apiresponse: ApiResponse?,apiexception: NSException?) -> Void) {
+        let response: () = requestToken(self.TOKEN_ENDPOINT,body: [
             "grant_type": "password",
             "username": username,
             "extension": ext,
             "password": password,
             "access_token_ttl": self.ACCESS_TOKEN_TTL,
             "refresh_token_ttl": self.REFRESH_TOKEN_TTL
-            ])
-        self.auth.setData(response.getDict())
-        return response
+            ]) {
+                (t,e) in
+                self.auth.setData(t!.getDict())
+                completion(apiresponse: t, apiexception: e)
+               }
     }
     
     
@@ -90,19 +95,21 @@ public class Platform {
     ///
     /// **Caution**: Refreshing an accessToken will deplete it's current time, and will
     /// not be appended to following accessToken.
-    public func refresh() -> ApiResponse {
+    public func refresh(completion: (apiresponse: ApiResponse?,apiexception: NSException?) -> Void)  {
         if(!self.auth.refreshTokenValid()){
             NSException(name: "Refresh token has expired", reason: "reason", userInfo: nil).raise()
         }
-        let response = requestToken(self.TOKEN_ENDPOINT,body: [
+        let response: () = requestToken(self.TOKEN_ENDPOINT,body: [
             
             "refresh_token": self.auth.refreshToken(),
             "grant_type": "refresh_token",
             "access_token_ttl": self.ACCESS_TOKEN_TTL,
             "refresh_token_ttl": self.REFRESH_TOKEN_TTL
-            ])
-        self.auth.setData(response.getDict())
-        return response
+            ]) {
+                (t,e) in
+                self.auth.setData(t!.getDict())
+                completion(apiresponse: t, apiexception: e)
+               }
     }
     
     /// func inflateRequest ()
@@ -110,11 +117,15 @@ public class Platform {
     /// @param: request                 NSMutableURLRequest
     /// @param: options                 list of options
     /// @response: NSMutableURLRequest
-    public func inflateRequest(request: NSMutableURLRequest, options: [String: AnyObject]) -> NSMutableURLRequest {
+    public func inflateRequest(request: NSMutableURLRequest, options: [String: AnyObject], completion: (apiresponse: ApiResponse?,apiexception: NSException?) -> Void) -> NSMutableURLRequest {
         if options["skipAuthCheck"] == nil {
-            ensureAuthentication()
+            ensureAuthentication() {
+                (t,e) in
+                completion(apiresponse: t, apiexception: e)
+            }
             let authHeader = self.auth.tokenType() + " " + self.auth.accessToken()
             request.setValue(authHeader, forHTTPHeaderField: "Authorization")
+            request.setValue(self.USER_AGENT, forHTTPHeaderField: "User-Agent")
         }
         return request
     }
@@ -127,37 +138,35 @@ public class Platform {
     /// @param: request             NSMutableURLRequest
     /// @param: options             list of options
     /// @response: ApiResponse      Callback
-    public func sendRequest(request: NSMutableURLRequest, options: [String: AnyObject]!, completion: (apiresponse: ApiResponse) -> Void) {
-        client.send(inflateRequest(request, options: options)) {
-            (t) in
-            completion(apiresponse: t)
+    public func sendRequest(request: NSMutableURLRequest, options: [String: AnyObject]!, completion: (apiresponse: ApiResponse?,apiexception: NSException?) -> Void) {
+        client.send(inflateRequest(request, options: options){
+            (t,e) in
+            completion(apiresponse: t, apiexception: e)
+            }) {
+            (t,e) in
+            completion(apiresponse: t, apiexception: e)
         }
     }
     
-    /// func sendRequest () - without Completetion handler
-    ///
-    /// @param: request     NSMutableURLRequest
-    /// @param: options     list of options
-    /// @response: ApiResponse
-    public func sendRequest(request: NSMutableURLRequest, options: [String: AnyObject]!) -> ApiResponse {
-        return client.send(inflateRequest(request, options: options))
-    }
     
     ///  func requestToken ()
     ///
     /// @param: path    The token endpoint
     /// @param: array   The body
     /// @return ApiResponse
-    func requestToken(path: String, body: [String:AnyObject]) -> ApiResponse {
+    func requestToken(path: String, body: [String:AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) {
         let authHeader = "Basic" + " " + self.apiKey()
         var headers: [String: String] = [:]
         headers["Authorization"] = authHeader
         headers["Content-type"] = "application/x-www-form-urlencoded;charset=UTF-8"
+        headers["User-Agent"] = self.USER_AGENT
         var options: [String: AnyObject] = [:]
         options["skipAuthCheck"] = true
         let urlCreated = createUrl(path,options: options)
-        let request = self.client.createRequest("POST", url: urlCreated, query: nil, body: body, headers: headers)
-        return self.sendRequest(request, options: options)
+        sendRequest(self.client.createRequest("POST", url: urlCreated, query: nil, body: body, headers: headers), options: options){
+            (r,e) in
+            completion(apiresponse: r,exception: e)
+        }
     }
     
     
@@ -174,19 +183,24 @@ public class Platform {
     /// Logs the user out of the current account.
     ///
     /// Kills the current accessToken and refreshToken.
-    public func logout() -> ApiResponse {
-        let response = requestToken(self.TOKEN_ENDPOINT,body: [
+    public func logout(completion: (apiresponse: ApiResponse?,apiexception: NSException?) -> Void) {
+        let response: () = requestToken(self.TOKEN_ENDPOINT,body: [
             "token": self.auth.accessToken()
-            ])
-        self.auth.reset()
-        return response
+            ]) {
+                (t,e) in
+                self.auth.reset()
+                completion(apiresponse: t, apiexception: e)
+               }
     }
   
     
     /// Check if the accessToken is valid
-    func ensureAuthentication() {
+    func ensureAuthentication(completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) {
         if (!self.auth.accessTokenValid()) {
-            refresh()
+            refresh() {
+                (r,e) in
+                completion(apiresponse: r,exception: e)
+            }
         }
     }
     
@@ -196,13 +210,12 @@ public class Platform {
     /// @param: url             token endpoint
     /// @param: query           body
     /// @return ApiResponse     Callback
-    public func get(url: String, query: [String: String]?=["":""], body: [String: AnyObject]?=nil, headers: [String: String]?=["":""], options: [String: AnyObject]?=["":""], completion: (response: ApiResponse) -> Void) {
+    public func get(url: String, query: [String: String]?=["":""], body: [String: AnyObject]?=nil, headers: [String: String]?=["":""], options: [String: AnyObject]?=["":""], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) {
         
         let urlCreated = createUrl(url,options: options!)
         sendRequest(self.client.createRequest("GET", url: urlCreated, query: query, body: body, headers: headers!), options: options) {
-            (r) in
-            completion(response: r)
-            
+            (r,e) in
+            completion(apiresponse: r,exception: e)
         }
     }
     
@@ -212,12 +225,12 @@ public class Platform {
     /// @param: url             token endpoint
     /// @param: body            body
     /// @return ApiResponse     Callback
-    public func post(url: String, query: [String: String]?=["":""], body: [String: AnyObject] = ["":""], headers: [String: String]?=["":""], options: [String: AnyObject]?=["":""], completion: (apiresponse: ApiResponse) -> Void) {
+    public func post(url: String, query: [String: String]?=["":""], body: [String: AnyObject] = ["":""], headers: [String: String]?=["":""], options: [String: AnyObject]?=["":""], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) {
         
         let urlCreated = createUrl(url,options: options!)
         sendRequest(self.client.createRequest("POST", url: urlCreated, query: query, body: body, headers: headers!), options: options) {
-            (r) in
-            completion(apiresponse: r)
+            (r,e) in
+            completion(apiresponse: r,exception: e)
         }
     }
     
@@ -226,12 +239,12 @@ public class Platform {
     /// @param: url             token endpoint
     /// @param: body            body
     /// @return ApiResponse     Callback
-    public func put(url: String, query: [String: String]?=["":""], body: [String: AnyObject] = ["":""], headers: [String: String]?=["":""], options: [String: AnyObject]?=["":""], completion: (apiresponse: ApiResponse) -> Void) {
+    public func put(url: String, query: [String: String]?=["":""], body: [String: AnyObject] = ["":""], headers: [String: String]?=["":""], options: [String: AnyObject]?=["":""], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) {
         
         let urlCreated = createUrl(url,options: options!)
         sendRequest(self.client.createRequest("PUT", url: urlCreated, query: query, body: body, headers: headers!), options: options) {
-            (r) in
-            completion(apiresponse: r)
+            (r,e) in
+            completion(apiresponse: r,exception: e)
         }
     }
     
@@ -240,12 +253,12 @@ public class Platform {
     /// @param: url             token endpoint
     /// @param: query           body
     /// @return ApiResponse     Callback
-    public func delete(url: String, query: [String: String] = ["":""], body: [String: AnyObject]?=nil, headers: [String: String]?=["":""], options: [String: AnyObject]?=["":""], completion: (apiresponse: ApiResponse) -> Void) {
+    public func delete(url: String, query: [String: String] = ["":""], body: [String: AnyObject]?=nil, headers: [String: String]?=["":""], options: [String: AnyObject]?=["":""], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) {
         
         let urlCreated = createUrl(url,options: options!)
         sendRequest(self.client.createRequest("DELETE", url: urlCreated, query: query, body: body, headers: headers!), options: options) {
-            (r) in
-            completion(apiresponse: r)
+            (r,e) in
+            completion(apiresponse: r,exception: e)
         }
     }    
 }

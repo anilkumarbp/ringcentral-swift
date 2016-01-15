@@ -36,45 +36,34 @@ public class Client {
         self.appVersion = appVersion
     }
    
-    /// Generic HTTP request
-    ///
-    /// :param: options         List of options for HTTP request
-    /// :param: completion      Completion handler for HTTP request
-    /// @response: ApiResposne
-    ///FIXME This method should throw ApiException if something went wrong or apiresponse.ok is false
-    public func send(request: NSMutableURLRequest) -> ApiResponse {
 
-        var response: NSURLResponse?
-        var error: NSError?
-        let data = NSURLConnection.sendSynchronousRequest(request, returningResponse: &response, error: &error)
-        var apiresponse = ApiResponse(request: request, data: data, response: response, error: error)
-        return apiresponse
-    }
-    
-    
     /// Generic HTTP request with completion handler
     ///
     /// :param: options         List of options for HTTP request
     /// :param: completion      Completion handler for HTTP request
     /// @resposne: ApiResponse  Callback
-    ///FIXME Completion handler should always be called with 2 parameters: apiResponse and apiError (which can be nil)
-    public func send(request: NSMutableURLRequest, completionHandler: (response: ApiResponse) -> Void) {
-
+    public func send(request: NSMutableURLRequest, completionHandler: (response: ApiResponse?, exception: NSException?) -> Void) {
+        
         var semaphore = dispatch_semaphore_create(0)
         var task: NSURLSessionDataTask = NSURLSession.sharedSession().dataTaskWithRequest(request) {
             
             (data, response, error) in
             var apiresponse = ApiResponse(request: request, data: data, response: response, error: error)
-            //TODO var apierror = apiresponse.isOK() ? ApiException(apiresponse) : nil
-            completionHandler(response:apiresponse) //TODO apierror
-            dispatch_semaphore_signal(semaphore)
+            // @success Handler
+            if apiresponse.isOK() {
+                completionHandler(response:apiresponse, exception: nil)
+                dispatch_semaphore_signal(semaphore)
+            }
+            // @failure Handler
+            else {
+                completionHandler(response: apiresponse, exception: NSException(name: "HTTP Error", reason: "error", userInfo: nil))
+                dispatch_semaphore_signal(semaphore)
+            }
+   
         }
         task.resume()
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
-        
     }
-    
-
     
     /// func createRequest()
     ///
@@ -95,6 +84,8 @@ public class Client {
             request.HTTPMethod = method
             request.HTTPBody = parse["body"]!.dataUsingEncoding(NSUTF8StringEncoding)
                 for (key,value) in parse["headers"] as! Dictionary<String, String> {
+                    println("key :",key)
+                    println("value :",value)
                     request.setValue(value, forHTTPHeaderField: key)
                 }
         }
@@ -158,6 +149,7 @@ public class Client {
         
         parse["query"] = truncatedQueryFinal
         parse["body"] = truncatedBodyFinal
+        println("The body is :"+truncatedBodyFinal)
         parse["headers"] = [String: [String: String]]()
         // check for Headers
         if headers.count == 1 {
