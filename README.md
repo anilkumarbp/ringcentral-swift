@@ -6,7 +6,6 @@
 [![Gem Version](http://img.shields.io/gem/v/cocoapods.svg?style=flat)](http://badge.fury.io/rb/cocoapods)
 [![Version](https://img.shields.io/cocoapods/v/ringcentral.svg?style=flat)](http://cocoapods.org/pods/ringcentral)
 [![Platform](https://img.shields.io/cocoapods/p/ringcentral.svg?style=flat)](http://cocoapods.org/pods/ringcentral)
-[![Code Climate](https://codeclimate.com/github/anilkumarbp/RingCentralSwift.png)](https://codeclimate.com/github/anilkumarbp/RingCentralSwift)
 ***
 
 1. [Getting Started](#getting-started)
@@ -34,22 +33,27 @@
 
 ### CocoaPods **(recommended)**
 
-The RingCentral Swift SDK is a CocoaPod written in Swift. [CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects. You can install it with the following command:
+The RingCentral Swift SDK is a CocoaPod written in Swift. [CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects. To get started using the RingCentral-Swift SDK, we recommend you add it to your project using CocoaPods.
+
+1. Install CocoaPods:
 
 ```bash
-$ gem install cocoapods
+$ sudo gem install cocoapods
 ```
 
-To integrate RingCentral Swift SDK into your Xcode project, navigate to the directory that contains your project and create a new **Podfile** with `pod init` or open an existing one, then add the following line:
+2. To integrate RingCentral Swift SDK into your Xcode project, navigate to the directory that contains your project and create a new **Podfile** with `pod init` or open an existing one, then add the following line:
 
 ```ruby
-platform :ios, '8.0'
+
 use_frameworks!
 
+target 'Your Project Name' do
 pod 'ringcentral'
+end
+
 ```
 
-Then, run the following command to install the dependency:
+3. Then, run the following command to install the RingCentral-Swift SDK:
 
 ```bash
 $ pod install
