@@ -10,6 +10,7 @@
 		A6E71EED1C72376500E3847B /* RingCentral.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E71EEC1C72376500E3847B /* RingCentral.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A6E71EF41C72376500E3847B /* RingCentral.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6E71EE91C72376500E3847B /* RingCentral.framework */; };
 		A6E71EF91C72376500E3847B /* RingCentralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6E71EF81C72376500E3847B /* RingCentralTests.swift */; };
+		BDBC667C92A602A59682AE67 /* Pods_RingCentral.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97153F07815E521240A788BF /* Pods_RingCentral.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,6 +24,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02472E6FF87251176C84CCC4 /* Pods-RingCentral.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RingCentral.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RingCentral/Pods-RingCentral.debug.xcconfig"; sourceTree = "<group>"; };
+		08AB6376F244A19A2F97D325 /* Pods-RingCentral.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RingCentral.release.xcconfig"; path = "Pods/Target Support Files/Pods-RingCentral/Pods-RingCentral.release.xcconfig"; sourceTree = "<group>"; };
+		97153F07815E521240A788BF /* Pods_RingCentral.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RingCentral.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6E71EE91C72376500E3847B /* RingCentral.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RingCentral.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6E71EEC1C72376500E3847B /* RingCentral.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RingCentral.h; sourceTree = "<group>"; };
 		A6E71EEE1C72376500E3847B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDBC667C92A602A59682AE67 /* Pods_RingCentral.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,12 +55,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0583EF5A27F364A3CEB5C5E5 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				02472E6FF87251176C84CCC4 /* Pods-RingCentral.debug.xcconfig */,
+				08AB6376F244A19A2F97D325 /* Pods-RingCentral.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		4F5BCD396DB6DD95DC600EFA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				97153F07815E521240A788BF /* Pods_RingCentral.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A6E71EDF1C72376400E3847B = {
 			isa = PBXGroup;
 			children = (
 				A6E71EEB1C72376500E3847B /* RingCentral */,
 				A6E71EF71C72376500E3847B /* RingCentralTests */,
 				A6E71EEA1C72376500E3847B /* Products */,
+				0583EF5A27F364A3CEB5C5E5 /* Pods */,
+				4F5BCD396DB6DD95DC600EFA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,10 +128,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A6E71EFD1C72376500E3847B /* Build configuration list for PBXNativeTarget "RingCentral" */;
 			buildPhases = (
+				7513C634F24E6DE146470E15 /* Check Pods Manifest.lock */,
 				A6E71EE41C72376500E3847B /* Sources */,
 				A6E71EE51C72376500E3847B /* Frameworks */,
 				A6E71EE61C72376500E3847B /* Headers */,
 				A6E71EE71C72376500E3847B /* Resources */,
+				77CC40F42EE2E4B5C41DBB06 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -188,6 +214,39 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7513C634F24E6DE146470E15 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		77CC40F42EE2E4B5C41DBB06 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RingCentral/Pods-RingCentral-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A6E71EE41C72376500E3847B /* Sources */ = {
@@ -307,6 +366,7 @@
 		};
 		A6E71EFE1C72376500E3847B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 02472E6FF87251176C84CCC4 /* Pods-RingCentral.debug.xcconfig */;
 			buildSettings = {
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -323,6 +383,7 @@
 		};
 		A6E71EFF1C72376500E3847B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 08AB6376F244A19A2F97D325 /* Pods-RingCentral.release.xcconfig */;
 			buildSettings = {
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -376,6 +437,7 @@
 				A6E71EFF1C72376500E3847B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A6E71F001C72376500E3847B /* Build configuration list for PBXNativeTarget "RingCentralTests" */ = {
 			isa = XCConfigurationList;
@@ -384,6 +446,7 @@
 				A6E71F021C72376500E3847B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
