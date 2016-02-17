@@ -1,6 +1,6 @@
 #! /bin/bash
 
-TEST_CMD="xcodebuild -scheme RingCentral -workspace RingCentral.xcworkspace -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=9.1' build test"
+TEST_CMD="xcodebuild -scheme RingCentral -workspace RingCentral.xcworkspace -sdk iphonesimulator GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES"
 
 which -s xcpretty
 XCPRETTY_INSTALLED=$?
