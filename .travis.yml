@@ -1,0 +1,15 @@
+language: objective-c
+osx_image: xcode7
+
+xcode_project: RingCentral.xcodeproj
+xcode_scheme: RingCentralTests
+
+script:
+  - xcodebuild test -workspace RingCentral.xcworkspace -scheme RingCentralTests -sdk iphonesimulator GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+# Only build PRs and pushes to master
+branches:
+  only:
+    - master
