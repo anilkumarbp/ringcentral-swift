@@ -28,9 +28,6 @@ xcuserdata
 *.hmap
 *.ipa
 
-## workspace
-
-*.xcworkspace
 
 # Swift Package Manager
 #
