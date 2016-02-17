@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A610BC961C741D0200D9D0F6 /* SDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC871C741D0200D9D0F6 /* SDK.swift */; };
+		A610BC971C741D0200D9D0F6 /* ApiException.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC891C741D0200D9D0F6 /* ApiException.swift */; };
+		A610BC981C741D0200D9D0F6 /* ApiResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC8A1C741D0200D9D0F6 /* ApiResponse.swift */; };
+		A610BC991C741D0200D9D0F6 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC8B1C741D0200D9D0F6 /* Client.swift */; };
+		A610BC9A1C741D0200D9D0F6 /* MultiPartBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC8C1C741D0200D9D0F6 /* MultiPartBuilder.swift */; };
+		A610BC9B1C741D0200D9D0F6 /* Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC8E1C741D0200D9D0F6 /* Mock.swift */; };
+		A610BC9C1C741D0200D9D0F6 /* MockClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC8F1C741D0200D9D0F6 /* MockClient.swift */; };
+		A610BC9D1C741D0200D9D0F6 /* MockRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC901C741D0200D9D0F6 /* MockRegistry.swift */; };
+		A610BC9E1C741D0200D9D0F6 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC921C741D0200D9D0F6 /* Auth.swift */; };
+		A610BC9F1C741D0200D9D0F6 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC931C741D0200D9D0F6 /* Platform.swift */; };
+		A610BCA01C741D0200D9D0F6 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = A610BC951C741D0200D9D0F6 /* Subscription.swift */; };
 		A6E71EED1C72376500E3847B /* RingCentral.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E71EEC1C72376500E3847B /* RingCentral.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A6E71EF41C72376500E3847B /* RingCentral.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6E71EE91C72376500E3847B /* RingCentral.framework */; };
 		A6E71EF91C72376500E3847B /* RingCentralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6E71EF81C72376500E3847B /* RingCentralTests.swift */; };
@@ -27,6 +38,17 @@
 		02472E6FF87251176C84CCC4 /* Pods-RingCentral.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RingCentral.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RingCentral/Pods-RingCentral.debug.xcconfig"; sourceTree = "<group>"; };
 		08AB6376F244A19A2F97D325 /* Pods-RingCentral.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RingCentral.release.xcconfig"; path = "Pods/Target Support Files/Pods-RingCentral/Pods-RingCentral.release.xcconfig"; sourceTree = "<group>"; };
 		97153F07815E521240A788BF /* Pods_RingCentral.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RingCentral.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A610BC871C741D0200D9D0F6 /* SDK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDK.swift; sourceTree = "<group>"; };
+		A610BC891C741D0200D9D0F6 /* ApiException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiException.swift; sourceTree = "<group>"; };
+		A610BC8A1C741D0200D9D0F6 /* ApiResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiResponse.swift; sourceTree = "<group>"; };
+		A610BC8B1C741D0200D9D0F6 /* Client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		A610BC8C1C741D0200D9D0F6 /* MultiPartBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiPartBuilder.swift; sourceTree = "<group>"; };
+		A610BC8E1C741D0200D9D0F6 /* Mock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mock.swift; sourceTree = "<group>"; };
+		A610BC8F1C741D0200D9D0F6 /* MockClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockClient.swift; sourceTree = "<group>"; };
+		A610BC901C741D0200D9D0F6 /* MockRegistry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockRegistry.swift; sourceTree = "<group>"; };
+		A610BC921C741D0200D9D0F6 /* Auth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
+		A610BC931C741D0200D9D0F6 /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
+		A610BC951C741D0200D9D0F6 /* Subscription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
 		A6E71EE91C72376500E3847B /* RingCentral.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RingCentral.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6E71EEC1C72376500E3847B /* RingCentral.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RingCentral.h; sourceTree = "<group>"; };
 		A6E71EEE1C72376500E3847B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -72,6 +94,52 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		A610BC861C741D0200D9D0F6 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A610BC871C741D0200D9D0F6 /* SDK.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		A610BC881C741D0200D9D0F6 /* Http */ = {
+			isa = PBXGroup;
+			children = (
+				A610BC891C741D0200D9D0F6 /* ApiException.swift */,
+				A610BC8A1C741D0200D9D0F6 /* ApiResponse.swift */,
+				A610BC8B1C741D0200D9D0F6 /* Client.swift */,
+				A610BC8C1C741D0200D9D0F6 /* MultiPartBuilder.swift */,
+			);
+			path = Http;
+			sourceTree = "<group>";
+		};
+		A610BC8D1C741D0200D9D0F6 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				A610BC8E1C741D0200D9D0F6 /* Mock.swift */,
+				A610BC8F1C741D0200D9D0F6 /* MockClient.swift */,
+				A610BC901C741D0200D9D0F6 /* MockRegistry.swift */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
+		A610BC911C741D0200D9D0F6 /* Platform */ = {
+			isa = PBXGroup;
+			children = (
+				A610BC921C741D0200D9D0F6 /* Auth.swift */,
+				A610BC931C741D0200D9D0F6 /* Platform.swift */,
+			);
+			path = Platform;
+			sourceTree = "<group>";
+		};
+		A610BC941C741D0200D9D0F6 /* Subscription */ = {
+			isa = PBXGroup;
+			children = (
+				A610BC951C741D0200D9D0F6 /* Subscription.swift */,
+			);
+			path = Subscription;
+			sourceTree = "<group>";
+		};
 		A6E71EDF1C72376400E3847B = {
 			isa = PBXGroup;
 			children = (
@@ -95,6 +163,11 @@
 		A6E71EEB1C72376500E3847B /* RingCentral */ = {
 			isa = PBXGroup;
 			children = (
+				A610BC861C741D0200D9D0F6 /* Core */,
+				A610BC881C741D0200D9D0F6 /* Http */,
+				A610BC8D1C741D0200D9D0F6 /* Mocks */,
+				A610BC911C741D0200D9D0F6 /* Platform */,
+				A610BC941C741D0200D9D0F6 /* Subscription */,
 				A6E71EEC1C72376500E3847B /* RingCentral.h */,
 				A6E71EEE1C72376500E3847B /* Info.plist */,
 			);
@@ -253,6 +326,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A610BC9F1C741D0200D9D0F6 /* Platform.swift in Sources */,
+				A610BC9D1C741D0200D9D0F6 /* MockRegistry.swift in Sources */,
+				A610BC9A1C741D0200D9D0F6 /* MultiPartBuilder.swift in Sources */,
+				A610BC981C741D0200D9D0F6 /* ApiResponse.swift in Sources */,
+				A610BCA01C741D0200D9D0F6 /* Subscription.swift in Sources */,
+				A610BC971C741D0200D9D0F6 /* ApiException.swift in Sources */,
+				A610BC991C741D0200D9D0F6 /* Client.swift in Sources */,
+				A610BC961C741D0200D9D0F6 /* SDK.swift in Sources */,
+				A610BC9C1C741D0200D9D0F6 /* MockClient.swift in Sources */,
+				A610BC9B1C741D0200D9D0F6 /* Mock.swift in Sources */,
+				A610BC9E1C741D0200D9D0F6 /* Auth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
