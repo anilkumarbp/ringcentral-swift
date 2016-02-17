@@ -13,7 +13,7 @@ public class ApiException: ErrorType {
     private var _apiresponse: ApiResponse!
     
     /// Constructor for the ApiException
-    ///
+
     /// @param: request     NSMutableURLRequest
     /// @param: data        Instance of NSData
     /// @param: response    Instance of NSURLResponse
