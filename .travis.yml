@@ -1,7 +1,6 @@
 language: objective-c
 osx_image: xcode7
 
-install: travis_wait mvn install
 
 script: 
   - xcodebuild -scheme RingCentral -workspace RingCentral.xcworkspace -sdk iphonesimulator GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES
