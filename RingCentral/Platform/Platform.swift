@@ -2,7 +2,7 @@
 //  Platform.swift
 //  RingCentral.
 //
-//  Created by Anil Kumar BP on 2/10/16.
+//  Created by Anil Kumar BP on 2/10/16
 //  Copyright © 2016 Anil Kumar BP. All rights reserved.
 //
 
