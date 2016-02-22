@@ -3,9 +3,9 @@ osx_image: xcode7.1
 before_install:
     - gem install cocoapods --no-rdoc --no-ri --no-document --quiet
     - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
-    - pod install && cd $TRAVIS_BUILD_DIR
+    - pod install 
 script:
-  - xcodebuild -workspace RingCentral.xcworkspace -scheme RingCentral build test -sdk iphonesimulator GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES
+  - xcodebuild -workspace RingCentral.xcworkspace -scheme RingCentral -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=9.1' build test
 
 
 after_success:
