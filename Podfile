@@ -3,7 +3,7 @@ use_frameworks!
 
 target ‘RingCentral’ do
 pod 'PubNub', '~>4.0'
-pod 'CryptoSwift'
+pod 'CryptoSwift', :git => "https://github.com/krzyzanowskim/CryptoSwift", :branch => "swift21"
 pod 'SwiftyJSON'
 end
 

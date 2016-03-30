@@ -12,50 +12,59 @@ import CryptoSwift
 
 public class Subscription: NSObject, PNObjectEventListener {
     
-    public static var EVENT_NOTIFICATION: String = "notification"
-    public static var EVENT_REMOVE_SUCCESS: String = "removeSuccess"
-    public static var EVENT_RENEW_SUCCESS: String = "removeError"
-    public static var EVENT_RENEW_ERROR: String = "renewError"
-    public static var EVENT_SUBSCRIBE_SUCCESS: String = "subscribeSuccess"
-    public static var EVENT_SUBSCRIBE_ERROR: String = "subscribeError"
+    var events: [String: String] = [:]
+    events["notification"] = "notification"
+    events["removeSuccess"] = "removeSuccess"
+    events["removeError"] = "removeError"
+    events["renewSuccess"] = "renewSuccess"
+    events["renewError"] = "renewError"
+    events["subscribeSuccess"] = "subscribeSuccess"
+    events["subscribeError"] = "subscribeError"
+
     
     
     /// Fields of subscription
     let platform: Platform!
     var pubnub: PubNub?
     var eventFilters: [String] = []
-    var _keepPolling: Bool = false
-    var subscription: ISubscription?
+    var keepPolling: Bool = false
+    var subscription: [String: AnyObject]?
     var function: ((arg: String) -> Void) = {(arg) in }
+    let renewHandicapMs: Double = 2 * 60 * 1000;
+    let pollInterval = 10 * 1000;
+    var timeout: AnyObject? = AnyObject?()            
+
     
     
     /// Initializes a subscription with Platform
     ///
     /// - parameter platform:        Authorized platform
     public init(platform: Platform) {
+        self.subscription = [:]
         self.platform = platform
+        self.timeout = nil
+    }
+
+    
+    /// func subscribed
+    ///
+    /// @response: Bool    If the subcription is active
+    public func subscribed() -> Bool {
+        return (self.subscription!["id"] != nil && self.subscription!["deliveryMode"] != nil && self.subscription!["deliveryMode"]!["subscriberKey"] != nil && self.subscription!["deliveryMode"]!["address"] != nil) ? true:false
     }
     
-    /// Structure holding information about how PubNub is delivered
-    struct IDeliveryMode {
-        var transportType: String = "PubNub"
-        var encryption: Bool = false
-        var address: String = ""
-        var subscriberKey: String = ""
-        var secretKey: String?
-        var encryptionKey: String = ""
+    /// func alive
+    ///
+    /// @response: Bool    If the subcription is active
+    public func alive() -> Bool {
+        return self.subscribed() && NSDate().timeIntervalSince1970 < self.expirationTime()
     }
     
-    /// Structure holding information about the details of PubNub
-    struct ISubscription {
-        var eventFilters: [String] = []
-        var expirationTime: String = ""
-        var expiresIn: NSNumber = 0
-        var deliveryMode: IDeliveryMode = IDeliveryMode()
-        var id: String = ""
-        var creationTime: String = ""
-        var status: String = ""
-        var uri: String = ""
+    /// func expirationTime
+    ///
+    ///@response: Bool     If the subscription is active
+    public func expirationTime() -> NSTimeInterval {
+        return NSDate().timeIntervalSince1970 - self.renewHandicapMs
     }
     
     /// Returns PubNub object
@@ -121,32 +130,39 @@ public class Subscription: NSObject, PNObjectEventListener {
     /// - parameter options:         List of options for PubNub
     public func renew(options: [String: AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) {
         
-        // include PUT instead of the apiCall
-        platform.put("/subscription/" + subscription!.id,
-            body: [
-                "eventFilters": getFullEventFilters()
-            ]) {
-                (apiresponse,exception) in
-                let dictionary = apiresponse!.getDict()
-                if let _ = dictionary["errorCode"] {
-                    self.subscribe(options){
-                        (r,e) in
-                        completion(apiresponse: r,exception: e)
+        do {
+            // include PUT instead of the apiCall
+            try platform.put("/subscription/" + (self.subscription!["id"] as! String),
+                body: [
+                    "eventFilters": getFullEventFilters()
+                ]) {
+                    (apiresponse,exception) in
+                    let dictionary = apiresponse!.getDict()
+                    if let _ = dictionary["errorCode"] {
+                        self.subscribe(options){
+                            (r,e) in
+                            completion(apiresponse: r,exception: e)
+                        }
+                    } else {
+                        self.subscription!["expiresIn"] = dictionary["expiresIn"] as! NSNumber
+                        self.subscription!["expirationTime"] = dictionary["expirationTime"] as! String
                     }
-                } else {
-                    self.subscription!.expiresIn = dictionary["expiresIn"] as! NSNumber
-                    self.subscription!.expirationTime = dictionary["expirationTime"] as! String
                 }
-        }
+          } catch {
+                print("The subscription renew error is unsuccessful")
+                self.reset()
+            }
     }
+    
     
     /// Subscribes to a channel with given events
     ///
     /// - parameter options:         Options for PubNub
     public func subscribe(options: [String: AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) {
         
+        do {
         // Create Subscription
-        platform.post("/subscription",
+        try platform.post("/subscription",
             body: [
                 "eventFilters": getFullEventFilters(),
                 "deliveryMode": [
@@ -154,36 +170,48 @@ public class Subscription: NSObject, PNObjectEventListener {
                     "encryption": "false"
                 ]
             ])  {
-                (apiresponse,exception) in
+                    (apiresponse,exception) in
                 
-                let dictionary = apiresponse!.getDict()
-                print("The subscription dictionary is :", dictionary, terminator: "")
-                var sub = ISubscription()
-                sub.eventFilters =      dictionary["eventFilters"] as! [String]
-                self.eventFilters =     dictionary["eventFilters"] as! [String]
-                sub.expirationTime =    dictionary["expirationTime"] as! String
-                sub.expiresIn =         dictionary["expiresIn"] as! NSNumber
-                sub.id =                dictionary["id"] as! String
-                sub.creationTime =      dictionary["creationTime"] as! String
-                sub.status =            dictionary["status"] as! String
-                sub.uri =               dictionary["uri"] as! String
-                self.subscription = sub
-                var del = IDeliveryMode()
-                let dictDelivery =      dictionary["deliveryMode"] as! NSDictionary
-                del.transportType =     dictDelivery["transportType"] as! String
-                del.encryption =        dictDelivery["encryption"] as! Bool
-                del.address =           dictDelivery["address"] as! String
-                del.subscriberKey =     dictDelivery["subscriberKey"] as! String
-                del.secretKey =         dictDelivery["secretKey"] as? String
-                del.encryptionKey =     dictDelivery["encryptionKey"] as! String
-                self.subscription!.deliveryMode = del
-                self.subscribeAtPubnub()
+                    let dictionary = apiresponse!.getDict()
+                    print("The subscription dictionary is :", dictionary, terminator: "")
+                    self.setSubscriptions(dictionary)
+                    self.subscribeAtPubnub()
+               }
+        } catch {
+            print("The subscription setup has failed")
+            self.reset()
+        }
+    }
+    
+    
+    /// Re - Subscribes to a channel with given events
+    ///
+    /// - parameter options:         Options for PubNub
+    public func resubscribe(options: [String: AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) {
+        self.reset()
+        self.setevents(self.eventFilters)
+        return subscribe(options) {
+            (r,e) in
+            completion(apiresponse: r,exception: e)
+        }
+    }
+    
+    
+    /// Set the subscription object returned from pubnub
+    ///
+    /// - parameter
+    public func setSubscriptions(sub: [String:AnyObject]) -> Void {
+        if sub.count < 0 {
+            self.subscription = [String: AnyObject]()
+        }
+        else {
+            self.subscription = sub
         }
     }
     
     /// Sets a method that will run after every PubNub callback
     ///
-    /// - parameter functionHolder:      Function to be ran after every PubNub callback
+    /// - parameter functionHolder:      Function to be run after every PubNub callback
     public func setMethod(functionHolder: ((arg: String) -> Void)) {
         self.function = functionHolder
     }
@@ -193,8 +221,8 @@ public class Subscription: NSObject, PNObjectEventListener {
     /// - returns: Bool of if currently subscribed
     public func isSubscribed() -> Bool {
         if let sub = self.subscription {
-            let dil = sub.deliveryMode
-            return dil.subscriberKey != "" && dil.address != ""
+            let dil = sub["deliveryMode"]
+            return dil!["subscriberKey"] as! String != "" && dil!["address"] as! String != ""
         }
         return false
     }
@@ -206,23 +234,23 @@ public class Subscription: NSObject, PNObjectEventListener {
     
     
     
-    /// Updates the subscription with the one passed in
-    ///
-    /// - parameter subscription:        New subscription passed in
-    private func updateSubscription(subscription: ISubscription) {
-        self.subscription = subscription
-    }
+//    /// Updates the subscription with the one passed in
+//    ///
+//    /// - parameter subscription:        New subscription passed in
+//    private func updateSubscription(subscription: ISubscription) {
+//        self.subscription = subscription
+//    }
     
     /// Unsubscribes from subscription
-    private func unsubscribe() {
-        if let channel = subscription?.deliveryMode.address {
+    private func reset() {
+        let channel = (subscription!["deliveryMode"]!["address"]) as! String
             pubnub?.unsubscribeFromChannelGroups([channel], withPresence: true)
-        }
+        
         
         
         if let sub = subscription {
             // delete the subscription
-            platform.delete("/subscription/" + sub.id) {
+            platform.delete("/subscription/" + (sub["id"] as! String)) {
                 (transaction) in
                 self.subscription = nil
                 self.eventFilters = []
@@ -234,10 +262,10 @@ public class Subscription: NSObject, PNObjectEventListener {
     
     /// Subscribes to a channel given the settings
     private func subscribeAtPubnub() {
-        let config = PNConfiguration( publishKey: "", subscribeKey: subscription!.deliveryMode.subscriberKey)
+        let config = PNConfiguration( publishKey: "", subscribeKey: (subscription!["deliveryMode"]!["subscriberKey"] as! String))
         self.pubnub = PubNub.clientWithConfiguration(config)
         self.pubnub?.addListener(self)
-        self.pubnub?.subscribeToChannels([subscription!.deliveryMode.address], withPresence: true)
+        self.pubnub?.subscribeToChannels([(subscription!["deliveryMode"]!["address"] as! String)], withPresence: true)
     }
     
     /// Notifies
@@ -251,7 +279,7 @@ public class Subscription: NSObject, PNObjectEventListener {
     /// - parameter message:         Message being received back
     public func client(client: PubNub!, didReceiveMessage message: PNMessageResult!) {
         let base64Message = message.data.message as! String
-        let base64Key = self.subscription!.deliveryMode.encryptionKey
+        let base64Key = self.subscription!["deliveryMode"]!["encryptionKey"] as! String
         
         _ = [0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00] as [UInt8]
         _ = AES.randomIV(AES.blockSize)

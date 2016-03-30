@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 public class MultipartBuilder {
     
@@ -26,7 +27,7 @@ public class MultipartBuilder {
     
     // Set Body for the MultiPart
     public func setBody(body: [String: AnyObject]) -> MultipartBuilder {
-        self.body = jsonToString(body)
+//        self.body = JSON(body)
         return self
     }
     
@@ -48,10 +49,6 @@ public class MultipartBuilder {
         
         // If content is a NSURL
         if(content is NSURL){
-            
-            //            let fileName = (content.path!! as NSString).lastPathComponent
-            //            let mimeType = "text/csv"
-            //            let fieldName = "uploadFile"
             element["contents"] = try! String(contentsOfFile: content.path!!, encoding: NSUTF8StringEncoding)
         }
         self._contents = element
@@ -78,52 +75,20 @@ public class MultipartBuilder {
         let mimeType = "application/octet-stream"
         let fieldName = "uploadFile"
         
+//        
+//        var dataString = "--\(boundaryConstant)\r\n"
+//        dataString += "Content-Type: application/json\r\n"
+//        dataString += "Content-Disposition: form-data; name=\"json\"; filename=\"request.json\"\r\n"
+//        dataString += "Content-Length: 51\r\n"
+//        dataString += "\r\n"
+//        dataString += "{\"to\":{\"phoneNumber\":\"foo\"},\"faxResolution\":\"High\"}\r\n"
+//        dataString += "--\(boundaryConstant)--\r\n"
+//        dataString += "Content-Type: \(mimeType)\r\n\r\n"
+//        dataString += "Content-Disposition: form-data; name=\"\(fieldName)\"; filename=\"\(fileName)\"\r\n"
+//        dataString += String(stringInterpolationSegment: contents)
+//        dataString += "\r\n"
+//        dataString += "--\(boundaryConstant)--\r\n"
         
-        var dataString = "--\(boundaryConstant)\r\n"
-        dataString += "Content-Type: application/json\r\n"
-        dataString += "Content-Disposition: form-data; name=\"json\"; filename=\"request.json\"\r\n"
-        dataString += "Content-Length: 51\r\n"
-        dataString += "\r\n"
-        dataString += "{\"to\":{\"phoneNumber\":\"foo\"},\"faxResolution\":\"High\"}\r\n"
-        dataString += "--\(boundaryConstant)--\r\n"
-        dataString += "Content-Type: \(mimeType)\r\n\r\n"
-        dataString += "Content-Disposition: form-data; name=\"\(fieldName)\"; filename=\"\(fileName)\"\r\n"
-        dataString += String(stringInterpolationSegment: contents)
-        dataString += "\r\n"
-        dataString += "--\(boundaryConstant)--\r\n"
-        
-    }
-    
-    
-    public func jsonToString(json: [String: AnyObject]) -> String {
-        var result = "{"
-        var delimiter = ""
-        for key in json.keys {
-            result += delimiter + "\"" + key + "\":"
-            let item: AnyObject? = json[key]
-            if let check = item as? String {
-                result += "\"" + check + "\""
-            } else {
-                if let check = item as? [String: AnyObject] {
-                    result += jsonToString(check)
-                } else if let check = item as? [AnyObject] {
-                    result += "["
-                    delimiter = ""
-                    for item in check {
-                        result += "\n"
-                        result += delimiter + "\""
-                        result += item.description + "\""
-                        delimiter = ","
-                    }
-                    result += "]"
-                } else {
-                    result += item!.description
-                }
-            }
-            delimiter = ","
-        }
-        result = result + "}"
-        return result
     }
     
 }

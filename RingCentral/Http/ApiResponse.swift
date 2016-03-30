@@ -87,7 +87,7 @@ public class ApiResponse {
         return response
     }
     
-    public func JSONStringify(value: AnyObject, prettyPrinted: Bool = false) -> String {
+    private func JSONStringify(value: AnyObject, prettyPrinted: Bool = false) -> String {
         let options = prettyPrinted ? NSJSONWritingOptions.PrettyPrinted : NSJSONWritingOptions(rawValue: 0)
         if NSJSONSerialization.isValidJSONObject(value) {
             if let data = try? NSJSONSerialization.dataWithJSONObject(value, options: options) {
