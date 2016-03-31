@@ -19,12 +19,12 @@ public class Client {
     internal var mockRegistry: AnyObject?
     
     // Client Constants
-    var contentType = "Content-Type"
-    var jsonContentType = "application/json"
-    var multipartContentType = "multipart/mixed"
-    var urlencodedContentType = "application/x-www-form-urlencoded"
-    var utf8ContentType = "charset=UTF-8"
-    var accept = "Accept"
+    var contentType: String = "Content-Type"
+    var jsonContentType: String = "application/json"
+    var multipartContentType: String = "multipart/mixed"
+    var urlencodedContentType: String = "application/x-www-form-urlencoded"
+    var utf8ContentType: String = "charset=UTF-8"
+    var accept: String = "Accept"
     
     
     /// Constructor for the Client
@@ -53,14 +53,12 @@ public class Client {
                 completionHandler(response:apiresponse, exception: nil)
                 dispatch_semaphore_signal(semaphore)
             }
-                // @failure Handler
+            // @failure Handler
             else {
                 completionHandler(response: apiresponse, exception: NSException(name: "HTTP Error", reason: "error", userInfo: nil))
                 dispatch_semaphore_signal(semaphore)
             }
-            
         }
-        
         task.resume()
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
