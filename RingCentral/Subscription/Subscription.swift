@@ -49,7 +49,7 @@ public class Subscription: NSObject, PNObjectEventListener {
     ///
     /// @response: Bool    If the subcription is active
     public func subscribed() -> Bool {
-        return (self.subscription!["id"] != nil && self.subscription!["deliveryMode"] != nil && self.subscription!["deliveryMode"]!["subscriberKey"] != nil && self.subscription!["deliveryMode"]!["address"] != nil) ? true:false
+        return (self.subscription!["id"] != nil && self.subscription!["deliveryMode"] != nil && self.subscription!["deliveryMode"]!["subscriberKey"] != nil && self.subscription!["deliveryMode"]!["address"] != nil)
     }
     
     /// func alive
@@ -111,23 +111,22 @@ public class Subscription: NSObject, PNObjectEventListener {
     /// Registers for a new subscription or renews an old one
     ///
     /// - parameter options:         List of options for PubNub
-    public func register(options: [String: AnyObject] = [String: AnyObject](), completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) throws {
+    public func register(options: [String: AnyObject] = [String: AnyObject](), completion: (inner: () throws -> (apiresponse: ApiResponse?,exception: NSException?)) -> Void) {
        
     do{
             
         if (alive()) {
             return try renew(options) {
-                (r,e) in
-                completion(apiresponse: r,exception: e)
+                (inner: () throws -> (apiresponse: ApiResponse?,exception: NSException?)) in
+            
             }
         } else {
             return try subscribe(options) {
-                (r,e) in
-                completion(apiresponse: r,exception: e)
+                (inner: () throws -> (apiresponse: ApiResponse?,exception: NSException?)) in
             }
         }
     } catch let error as NSError {
-           self.eventNotification.emit(self.events["renewError"]!, response: error);
+           self.eventNotification.emit(self.events["renewError"]!, response: error)
         }
     }
     
@@ -135,7 +134,7 @@ public class Subscription: NSObject, PNObjectEventListener {
     /// Renews the subscription
     ///
     /// - parameter options:         List of options for PubNub
-    public func renew(options: [String: AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) throws {
+    public func renew(options: [String: AnyObject], completion: (inner: () throws -> (apiresponse: ApiResponse?,exception: NSException?)) -> Void) {
         
         do {
             if(!self.subscribed()) {
@@ -153,12 +152,11 @@ public class Subscription: NSObject, PNObjectEventListener {
                         do {
                             
                                 try self.subscribe(options) {
-                                    (r,e) in
-                                    completion(apiresponse: r,exception: e)
+                                  (inner: () throws -> (apiresponse: ApiResponse?,exception: NSException?)) in
                                 }
                             } catch let err {
                                 self.eventNotification.emit(self.events["renewError"]!, response: err as NSError);
-//                                throw exception(err);
+                                completion(inner: {throw err})
                             }
                     } else {
                         self.subscription!["expiresIn"] = dictionary["expiresIn"] as! NSNumber
@@ -167,9 +165,8 @@ public class Subscription: NSObject, PNObjectEventListener {
                 }
         } catch let err {
             self.eventNotification.emit(self.events["renewError"]!, response: err as NSError)
-            NSException(name: "Error", reason: "Error", userInfo: nil).raise()
-//            exception(err)
-                self.reset()
+            completion(inner: {throw err})
+            self.reset()
             }
     }
     
@@ -178,7 +175,7 @@ public class Subscription: NSObject, PNObjectEventListener {
     /// Subscribes to a channel with given events
     ///
     /// - parameter options:         Options for PubNub
-    public func subscribe(options: [String: AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) throws {
+    public func subscribe(options: [String: AnyObject], completion: (inner: () throws -> (apiresponse: ApiResponse?,exception: NSException?)) -> Void)  {
  
         do {
         // Create Subscription
@@ -200,6 +197,7 @@ public class Subscription: NSObject, PNObjectEventListener {
         } catch let err {
             self.reset()
             self.eventNotification.emit(self.events["subscribeError"]!,response: err as NSError)
+            completion(inner: {throw err})
         }
     }
     
@@ -207,24 +205,24 @@ public class Subscription: NSObject, PNObjectEventListener {
     /// Re - Subscribes to a channel with given events
     ///
     /// - parameter options:         Options for PubNub
-    public func resubscribe(options: [String: AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) throws {
+    public func resubscribe(options: [String: AnyObject], completion: (inner: () throws -> (apiresponse: ApiResponse?,exception: NSException?)) -> Void)  {
         self.reset()
         self.setevents(self.eventFilters)
         do{
             return try subscribe(options) {
-                (r,e) in
-                completion(apiresponse: r,exception: e)
+                (inner: () throws -> (apiresponse: ApiResponse?,exception: NSException?)) in
             }
-        } catch let error as NSError {
-            error.description
+        } catch let err {
+            completion(inner: {throw err})
         }
     }
     
     
     /// Remove subscription
-    public func remove(options: [String: AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) throws {
+    public func remove(options: [String: AnyObject], completion: (inner: () throws -> (apiresponse: ApiResponse?,exception: NSException?)) -> Void) {
         
-        print("Removing subscription")
+        do {
+
         
         if(!self.subscribed()) {
             
@@ -232,7 +230,7 @@ public class Subscription: NSObject, PNObjectEventListener {
             
         }
         
-        do {
+       
             if let sub = subscription {
                 // delete the subscription
                 try platform.delete("/subscription/" + (sub["id"] as! String)) {
@@ -246,6 +244,7 @@ public class Subscription: NSObject, PNObjectEventListener {
             }
         } catch let err {
             self.eventNotification.emit(self.events["removeError"]!,response: err as NSError)
+            completion(inner: {throw err})
         }
         
 
