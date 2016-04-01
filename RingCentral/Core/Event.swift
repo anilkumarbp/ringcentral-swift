@@ -8,16 +8,16 @@
 
 import Foundation
 
-class Event <T:Any> {
-    var handlers = Array<(T) -> Void>()
+class Event <E:Any,R:Any> {
+    var handlers = Array<(E,R) -> Void>()
     
-    func listen(handler: (T) -> Void) {
+    func listen(handler: (E,R) -> Void) {
         handlers.append(handler)
     }
     
-    func emit(object: T) {
+    func emit(event: E,response: R) {
         for handler in handlers {
-            handler(object)
+            handler(event,response)
         }
     }
 }

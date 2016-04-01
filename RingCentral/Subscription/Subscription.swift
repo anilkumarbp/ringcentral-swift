@@ -12,19 +12,9 @@ import CryptoSwift
 
 public class Subscription: NSObject, PNObjectEventListener {
     
-    var events: [String: String] = [:]
-    
-    events["notification"] = "notification"
-    events["removeSuccess"] = "removeSuccess"
-    events["removeError"] = "removeError"
-    events["renewSuccess"] = "renewSuccess"
-    events["renewError"] = "renewError"
-    events["subscribeSuccess"] = "subscribeSuccess"
-    events["subscribeError"] = "subscribeError"
-
-    
-    
+  
     /// Fields of subscription
+    public var events: [String: String] = [:]
     let platform: Platform!
     var pubnub: PubNub?
     var eventFilters: [String] = []
@@ -34,7 +24,7 @@ public class Subscription: NSObject, PNObjectEventListener {
     let renewHandicapMs: Double = 2 * 60 * 1000;
     let pollInterval = 10 * 1000;
     var timeout: AnyObject? = AnyObject?()
-    var eventNotification = Event<String>()
+    var eventNotification = Event<String,NSError>()
 
     
     
@@ -45,6 +35,13 @@ public class Subscription: NSObject, PNObjectEventListener {
         self.subscription = [:]
         self.platform = platform
         self.timeout = nil
+        events["notification"] = "notification"
+        events["removeSuccess"] = "removeSuccess"
+        events["removeError"] = "removeError"
+        events["renewSuccess"] = "renewSuccess"
+        events["renewError"] = "renewError"
+        events["subscribeSuccess"] = "subscribeSuccess"
+        events["subscribeError"] = "subscribeError"
     }
 
     
@@ -130,7 +127,7 @@ public class Subscription: NSObject, PNObjectEventListener {
             }
         }
     } catch let error as NSError {
-            error.description
+           self.eventNotification.emit(self.events["renewError"]!, response: error);
         }
     }
     
@@ -140,15 +137,11 @@ public class Subscription: NSObject, PNObjectEventListener {
     /// - parameter options:         List of options for PubNub
     public func renew(options: [String: AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) throws {
         
-        print("Renewing subscription")
-        
-        if(!self.subscribed()) {
-            
-         throw NSError(domain: "No subscription", code: 400, userInfo: nil)
-
+        do {
+            if(!self.subscribed()) {
+            throw NSError(domain: "No subscription", code: 400, userInfo: nil)
         }
 
-        do {
             // include PUT instead of the apiCall
             try platform.put("/subscription/" + (self.subscription!["id"] as! String),
                 body: [
@@ -163,16 +156,19 @@ public class Subscription: NSObject, PNObjectEventListener {
                                     (r,e) in
                                     completion(apiresponse: r,exception: e)
                                 }
-                            } catch {
-                            self.eventNotification.emit(self.events["subscribeError"]!)
+                            } catch let err {
+                                self.eventNotification.emit(self.events["renewError"]!, response: err as NSError);
+//                                throw exception(err);
                             }
                     } else {
                         self.subscription!["expiresIn"] = dictionary["expiresIn"] as! NSNumber
                         self.subscription!["expirationTime"] = dictionary["expirationTime"] as! String
                     }
                 }
-          } catch {
-                self.eventNotification.emit(self.events["renewError"]!)
+        } catch let err {
+            self.eventNotification.emit(self.events["renewError"]!, response: err as NSError)
+            NSException(name: "Error", reason: "Error", userInfo: nil).raise()
+//            exception(err)
                 self.reset()
             }
     }
@@ -183,12 +179,7 @@ public class Subscription: NSObject, PNObjectEventListener {
     ///
     /// - parameter options:         Options for PubNub
     public func subscribe(options: [String: AnyObject], completion: (apiresponse: ApiResponse?,exception: NSException?) -> Void) throws {
-       
-        if(self.eventFilters.count == 0) {
-            
-           throw NSError(domain: "Events are undefined", code: 400, userInfo: nil)
-        }
-        
+ 
         do {
         // Create Subscription
         try platform.post("/subscription",
@@ -206,9 +197,9 @@ public class Subscription: NSObject, PNObjectEventListener {
                     self.setSubscriptions(dictionary)
                     self.subscribeAtPubnub()
                }
-        } catch {
+        } catch let err {
             self.reset()
-            self.eventNotification.emit(self.events["subscribeError"]!)
+            self.eventNotification.emit(self.events["subscribeError"]!,response: err as NSError)
         }
     }
     
@@ -245,16 +236,16 @@ public class Subscription: NSObject, PNObjectEventListener {
             if let sub = subscription {
                 // delete the subscription
                 try platform.delete("/subscription/" + (sub["id"] as! String)) {
-                    (apiresponse,exception) in
+                    (r,e) in
                     self.subscription = nil
                     self.eventFilters = []
                     self.pubnub = nil
-                }
                 self.reset()
-                self.eventNotification.emit(self.events["subscribeError"]!)
+//                self.eventNotification.emit(self.events["subscribeError"]!,response: r as NSError)
+                }
             }
-        } catch {
-            self.eventNotification.emit(self.events["removeError"]!)
+        } catch let err {
+            self.eventNotification.emit(self.events["removeError"]!,response: err as NSError)
         }
         
 
@@ -301,9 +292,9 @@ public class Subscription: NSObject, PNObjectEventListener {
         self.pubnub?.subscribeToChannels([(subscription!["deliveryMode"]!["address"] as! String)], withPresence: true)
     }
     
-    /// Notifies
+    /// Notifies   -----> At the moment this is being handled in the client()
     private func notify() {
-        self.eventNotification.emit(self.events["notification"]!)
+//        self.eventNotification.emit(self.events["notification"]!,)
     }
     
     /// Method that PubNub calls when receiving a message back from Subscription
@@ -353,13 +344,5 @@ public class Subscription: NSObject, PNObjectEventListener {
         return base64Encoded;
     }
     
-    /// Converts a dictionary represented as a String into a NSDictionary
-    ///
-    /// - parameter string:              Dictionary represented as a String
-    /// - returns: NSDictionary of the String representation of a Dictionary
-    private func stringToDict(string: String) -> NSDictionary {
-        let data: NSData = string.dataUsingEncoding(NSUTF8StringEncoding)!
-        return (try! NSJSONSerialization.JSONObjectWithData(data, options: [])) as! NSDictionary
-    }
 }
 
