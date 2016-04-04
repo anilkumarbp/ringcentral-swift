@@ -127,6 +127,7 @@ public class Subscription: NSObject, PNObjectEventListener {
         }
     } catch let error as NSError {
            self.eventNotification.emit(self.events["renewError"]!, response: error)
+           completion(inner: {throw err})
         }
     }
     
