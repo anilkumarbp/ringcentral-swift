@@ -1,13 +1,13 @@
 language: objective-c
-
-branches:
- only:
- - master
-
-xcode_project: demo/demo.xcworkspace
-xcode_scheme: demoTests
-osx_image: xcode6.4
-xcode_sdk: iphonesimulator
-
+osx_image: xcode7.1
+before_install:
+    - gem install cocoapods --no-rdoc --no-ri --no-document --quiet
+    - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
+    - pod install 
 script:
-- xcodebuild clean build test -workspace demo/demo.xcworkspace -scheme demoTests -sdk iphonesimulator
+  - xcodebuild -workspace RingCentral.xcworkspace -scheme RingCentral -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=9.1' build test
+
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+

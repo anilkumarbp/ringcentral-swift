@@ -1,114 +1,99 @@
-# RingCentral Swift SDK
+# ringcentral-swift-v2
 
-[![Build Status](https://travis-ci.org/ringcentral/ringcentral-swift.svg?branch=master)](https://travis-ci.org/ringcentral/ringcentral-swift)
-
-***
-
-1. [Overview](#overview)
-2. [Setting Up](#setting-up)
-3. [Initialization](#initialization)
-4. [Authorization](#authorization)
-5. [Generic Requests](#generic-requests)
-6. [Performing RingOut](#performing-ringout)
-7. [Sending SMS](#sending-sms)
-8. [Subscription](#subscription)
-9. [SDK Demos](#sdk-demos)
-
+[![Build Status](https://travis-ci.org/anilkumarbp/ringcentral-swift-v2.svg)](https://travis-ci.org/anilkumarbp/ringcentral-swift-v2) [![codecov.io](https://codecov.io/github/anilkumarbp/ringcentral-swift-v2/coverage.svg?branch=master)](https://codecov.io/github/anilkumarbp/ringcentral-swift-v2?branch=master)
 
 ***
 
-# Overview
-
-The purpose of this RingCentral Swift SDK is to assist other developers in expediating the
-development of any application. The outlines attempt to mirror the legacy of other SDks,
-however it is not guaranteed to be exactly the same.
+1. [Getting Started](#getting-started)
+2. [Initialization](#initialization)
+3. [Authorization](#authorization)
+4. [Performing API Call](#performing-api-call)
+5. [Performing RingOut](#performing-ringout)
+6. [Sending SMS](#sending-sms)
+7. [Subscription](#subscription)
+8. [SDK Demos](#sdk-demo-1)
 
 ***
 
-# Setting Up
+***
 
-Navigate to your project directory (the one with the 'workspace' file, e.g. `.xcodeproj` extension).
+## Requirements
 
-Type:
+- iOS 8.0+
+- Xcode 7.0+
+- Swift 2.0
 
-    $ git clone https://github.com/ringcentral/ringcentral-swift.git
-    $ cd ringcentral-swift
-    $ chmod 700 setup.sh
-    $ ./setup.sh
-    $ cd ..
 
-The previous commands will automatically move all the appropriate files into your project directory.
+# Getting Started
 
-Open up Xcode to your project. File -> Add Files... -> add http, core, subscription, and platform.
 
-Install CocoaPods to retrieve other dependencies.
+### CocoaPods **(recommended)**
 
-To set up CocoaPods:
+The RingCentral Swift SDK is a CocoaPod written in Swift 2.0. [CocoaPods](http://cocoapods.org) is a dependency manager for Cocoa projects. To get started using the RingCentral-Swift SDK, we recommend you add it to your project using CocoaPods.
 
+1. Install CocoaPods:
+
+    ```bash
     $ sudo gem install cocoapods
+    ```
 
-The same line is used to update cocoapods accordingly.
+2. To integrate RingCentral Swift SDK into your Xcode project, navigate to the directory that contains your project (.xcworkspace) and create a new **Podfile** using  
 
-Ensure your current working directory is the project directory and execute the following CocoaPod commands:
-
+    ```ruby
     $ pod init
-    $ open -a Xcode Podfile
-
-That will set up a Podfile and open it for editing.
-
-If you are in the iOS platform, replace the file contents with the following, ensuring you replace `YourProjectName` and `YourProjectNameTests` appropriately. The target file must have the literal string `Tests` appended to `YourProjectName`.
-
-    platform :ios, '8.0'
-    target 'YourProjectName' do
-    source 'https://github.com/CocoaPods/Specs'
-    pod 'PubNub', '~>4.0'
-    use_frameworks!
-    end
-    target 'YourProjectNameTests' do
-    end
-
-If you are in the OSx platform, replace the file contents with the following, ensuring you replace `YourProjectName` and `YourProjectTest` appropriately:
+    ```
     
-    platform :osx, '10.0'
-    target 'YourProjectName' do
-    source 'https://github.com/CocoaPods/Specs'
+    or open an existing one, then add the following lines:
+
+    ```ruby
+    platform :ios, '8.0'
     use_frameworks!
-    pod 'PubNub', '~>4.0'
+
+    target 'YourProjectName' do
+    pod 'ringcentral'
     end
+    ```
 
-Save and close the Podfile.
+3. Then, run the following command to install the RingCentral-Swift SDK:
 
-Go back into terminal and type the following from within the project directory:
-
-    $ pod update
+    ```bash
     $ pod install
+    ```
 
-If for some reason there is not an Objective-C bridging header:
-Create a new File (File -> New -> File) of type Objective-C.
-You will be promped "Would you like to configure an Objective-C bridging header?".
-Select Yes, and insert the following into the Bridging Header file (.h).
+4. open `YourProjectName.xcworkscpace` in Xcode to begin coding.
 
-    #import <PubNub/PubNub.h>
 
-You will now be able to use the PubNub SDK written in Objective-C.
+### If you do not Use CocoaPods, manually Add Subprojects
+
+You can integrate RingCentral Swift SDK into your project manually without using a dependency manager.
+
+Drag the `src` project into your own and add the resource as an **Embedded Binary**, as well as a **Target Dependency** and **Linked Framework** (under Build Phases) in order to build on the simulator and on a device.
+
+<p align="center">
+  <img src="https://github.com/anilkumarbp/RingCentralSwift/blob/master/img/Add_SubProject.png" alt="Manually Install Framework"/>
+</p>
+
 
 # Initialization
 
-The RingCentral SDK is initiated in the following ways.
+Before you start, import the library into your project.
+```swift
+import ringcentral
+```
+RingCentral SDK is initiated in the following ways.
 
 **Sandbox:**
-
-    var rcsdk = SDK(appKey: app_key, appSecret: app_secret, server: SDK.RC_SERVER_SANDBOX)
-
+```swift
+var rcsdk = SDK(appKey: app_key, appSecret: app_secret, server: SDK.RC_SERVER_SANDBOX)
+```
 **Production:**
+```swift
+var rcsdk = SDK(appKey: app_key, appSecret: app_secret, server: SDK.RC_SERVER_PRODUCTION)
+```
+The `app_key` and `app_secret` should be read from a configuration file.
 
-    var rcsdk = SDK(appKey: app_key, appSecret: app_secret, server: SDK.RC_SERVER_PRODUCTION)
+Depending on the stage of production, either `SDK.RC_SERVER_SANDBOX` or `SDK.RC_SERVER_PRODUCTION` will be used as the `server` parameter.
 
-The 'app_key' and 'app_secret' should be read from a configuration file.
-
-Depending on the stage of production, either                                        
-**SDK.RC_SERVER_SANDBOX** or **SDK.RC_SERVER_PRODUCTION**                                   
-will be used as the 'server' parameter.
 
 # Authorization
 
@@ -118,101 +103,117 @@ To authorize the platform, extract the 'Platform' object:
 
 Once the platform is extracted, call:
 
-    platform.authorize(username, password: password)
+    platform.login(username: username, password: password)
+    {
+        (completion handler) in
+    }
 
 or (to authorize with extension):
 
-    platform.authorize(username, ext: ext, password: password)
+    platform.login(username: username, ext: ext, password: password)
+    {
+        (completion handler) in
+    }
 
-The SDK will automatically refresh the token so long the refresh token lives.
 
 *Caution*: If no extension is specified, platform automitically refers extension 101 (default).
 ***
 
-# Generic Requests
+# Performing API Call
 
 Currently all requests can be made through the following:
 
-    apiCall([
-        "method": "POST",
-        "url": "/restapi/v1.0/",
-        "body": ""
-    ])
+```swift
+platform.get('/account/~/extension/~') 
+platform.post('/account/~/extension/~', body: [])
+platform.put('/account/~/extension/~', body: []) 
+platform.delete('/account/~/extension/~', query: []) 
 
-Attach the following code as a completion handler (callback) if needed:
+```
 
-    {(data, response, error) in
-        if (error) {
-            // do something for error
-        } else {
-            // continue with code
-        }
-    }
+Attach the following code as a completion handler (**always**) :
+```swift
+{
+   (apiresponse,apiexception) in
+   print("The response is:", apiresponse)
+}
+```
 
-For simple checking of a successful status code:
+Returning 'data' into a Dictionary (JSON): This is handled by the **ApiResponse** class within the SDK. we can retrieve the dictionary as shown below
 
-    (response as! NSHTTPURLResponse).statusCode / 100 == 2
-
-
-For turning 'data' into a Dictionary (JSON):
-
-    NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: &errors) as! NSDictionary
-    // or
-    NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as! NSDictionary
-
+NSJSON Serialization handled by **ApiResponse** class :
+```swift
+NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: &errors) as! NSDictionary
+```
+Retrieve the dictionary in your application as shown below :
+```swift
+apiresponse.getDict()
+```
 
 For readability of the data
-
-    println(NSString(data: data!, encoding: NSUTF8StringEncoding))
+```swift
+print(apiresponse.getDict())
+```
 
 # Performing RingOut
 
 RingOut follows a two-legged style telecommunication protocol.
-The following method call is used to send a Ring Out.
 
-    apiCall([
-        "method": "POST",
-        "url": "/restapi/v1.0/account/~/extension/~/ringout",
-        "body": ["to": ["phoneNumber": "14088861168"],
-                 "from": ["phoneNumber": "14088861168"],
-                 "callerId": ["phoneNumber": "13464448343"],
-                 "playPrompt": "true"]
+The following method call is used to create a Ring Out.
+```swift
+platform.post("/account/~/extension/~/ringout", body :
+    [ "to": ["phoneNumber": "ToNumber"],
+        "from": ["phoneNumber": "FromNumber"],
+        "callerId": ["phoneNumber": "CallerId"],
+        "playPrompt": "true"
     ])
+    {
+      (completition handler)
+    }
+```
 
 # Sending SMS
 
-The follow method call is used to send a SMS.
-
-platform.postSms("hi i'm min", to: "12345678912") // true
-    
-    apiCall([
-        "method": "POST",
-        "url": "/restapi/v1.0/account/~/extension/~/sms",
-        "body": ["to": [{"phoneNumber": "14088861168"}],
-                 "from": ["phoneNumber": "14088861168"],
-                 "text": "send message"
+The following method call is used to send a SMS.
+```swift
+platform.post("/account/~/extension/~/sms", body :
+    [ "to": [["phoneNumber": "18315941779"]],
+        "from": ["phoneNumber": "15856234190"],
+        "text": "Test"
     ])
-
+    {
+      (completition handler)
+    }
+```
 
 # Subscription
 
-To enable subscription, type:
+Create a subscription using the **createSubscription** method
+```swift
+var subscription = rcsdk.createSubscription()
+```
 
-    self.subscription = Subscription(platform: self)
-    subscription!.register()
+To add Events to the Subscription Object:
+```swift
+subscription.addEvents(
+    [
+        "/restapi/v1.0/account/~/extension/~/presence",
+        "/restapi/v1.0/account/~/extension/~/message-store"
+    ])
+```
+Register a Subscription:
+```swift
+subscription.register()
+    {
+      (completition handler)
+    }
+```
+Please keep in mind that due to limitations of PUBNUB library, which is synchronous, subscriptions may expire and must be re-created manually.
 
-In order for PubNub to do something after a callback:
-
-    platform.subscription!.setMethod({
-        (arg) in
-        // do whatever you need to with the callback variable 'arg'
-    })
-
-An example in the demo is provided that changes the status color accordingly.
 
 ***
 
-# SDK Demo 1
+# SDK Demo : ( w.i.p )
 
 Login page:
     Insert app_key, app_secret, username, password in order to log in.
@@ -231,5 +232,4 @@ Log page:
     Shows implementation of the 'Call Log' along with the 'Message Log'.
 
 ![Alt text](/img/log.png?raw=true "Optional Title")
-
 
